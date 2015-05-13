@@ -1,411 +1,450 @@
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml">
 
-<head>
-<meta content="en-us" http-equiv="Content-Language" />
-<meta content="text/html; charset=utf-8" http-equiv="Content-Type" />
-<style type="text/css">
-</style>
-    <script type="text/javascript">
-        function hide8() {
-            "use strict";
-            document.getElementById("checkbox1").style.display = "none";
-            document.getElementById("checkbox1").checked = false;
-            document.getElementById("labelc1").style.display = "none";
-            document.getElementById("checkbox2").style.display = "none";
-            document.getElementById("checkbox2").checked = false;
-            document.getElementById("labelc2").style.display = "none";
-
-            document.getElementById("checkbox3").style.display = "inline";
-            document.getElementById("labelc3").style.display = "inline";
-
-            document.getElementById("fs2").style.height = "30px";
-            document.getElementById("s1").style.top = "140px";
-        }
-
-        function hide1() {
-            "use strict";
-            document.getElementById("checkbox1").style.display = "inline";
-            document.getElementById("labelc1").style.display = "inline";
-            document.getElementById("checkbox2").style.display = "none";
-            document.getElementById("checkbox2").checked = false;
-            document.getElementById("labelc2").style.display = "none";
-
-            document.getElementById("checkbox3").style.display = "none";
-            document.getElementById("checkbox3").checked = false;
-            document.getElementById("labelc3").style.display = "none";
-
-            document.getElementById("fs2").style.height = "30px";
-            document.getElementById("s1").style.top = "140px";
-        }
-        
-        function hide2() {
-            "use strict";
-            if (document.getElementById("checkbox1").checked) {
-                document.getElementById("checkbox2").style.display = "inline";
-                document.getElementById("labelc2").style.display = "inline";
-                
-                document.getElementById("fs2").style.height = "50px";
-                document.getElementById("s1").style.top = "160px";
-            } else {
+    <head>
+        <meta content="en-us" http-equiv="Content-Language" />
+        <meta content="text/html; charset=utf-8" http-equiv="Content-Type" />
+        <style type="text/css">
+        </style>
+        <script type="text/javascript">
+            function hide8() {
+                "use strict";
+                document.getElementById("checkbox1").style.display = "none";
+                document.getElementById("checkbox1").checked = false;
+                document.getElementById("labelc1").style.display = "none";
                 document.getElementById("checkbox2").style.display = "none";
                 document.getElementById("checkbox2").checked = false;
                 document.getElementById("labelc2").style.display = "none";
-                
+
+                document.getElementById("checkbox3").style.display = "inline";
+                document.getElementById("labelc3").style.display = "inline";
+
                 document.getElementById("fs2").style.height = "30px";
                 document.getElementById("s1").style.top = "140px";
             }
-        }
-        
-        function compile() {
-            "use strict";
 
-            var radi8 = false;
-            var option1 = false;
-            var option2 = false;
+            function hide1() {
+                "use strict";
+                document.getElementById("checkbox1").style.display = "inline";
+                document.getElementById("labelc1").style.display = "inline";
+                document.getElementById("checkbox2").style.display = "none";
+                document.getElementById("checkbox2").checked = false;
+                document.getElementById("labelc2").style.display = "none";
 
-            if (!document.getElementById("radio1-1").checked && !document.getElementById("radio1-2").checked) {
-                window.alert("Please choose an output option!");
-                return;
-            } else if (document.getElementById("radio1-2").checked) {
-                radi8 = true;
+                document.getElementById("checkbox3").style.display = "none";
+                document.getElementById("checkbox3").checked = false;
+                document.getElementById("labelc3").style.display = "none";
+
+                document.getElementById("fs2").style.height = "30px";
+                document.getElementById("s1").style.top = "140px";
+            }
+
+            function hide2() {
+                "use strict";
                 if (document.getElementById("checkbox1").checked) {
-                    option1 = true;
-                }
-                if (document.getElementById("checkbox2").checked) {
-                    option2 = true;
-                }
-            } else {
-                if (document.getElementById("checkbox3").checked) {
-                    option1 = true;
-                }
-            }
+                    document.getElementById("checkbox2").style.display = "inline";
+                    document.getElementById("labelc2").style.display = "inline";
 
-            var program = document.getElementById("programtext").value;
-
-            var labels = {};
-
-            var index = 0;
-            var currline = 0x000;
-            var currword = "";
-
-            var chr;
-            while (index < program.length) {
-                chr = program.charAt(index);
-
-                if (chr === "," && currword.length > 0) {
-                    labels[currword] = currline;
-                } else if (chr === "\n") {
-                    if (currword.substr(0, 3) === "ORG") {
-                        currline = parseInt(currword.substr(4, 3), 16) - 0x1;
-                    }
-                    currline += 0x1;
-                    currword = "";
+                    document.getElementById("fs2").style.height = "50px";
+                    document.getElementById("s1").style.top = "160px";
                 } else {
-                    currword += chr;
-                }
+                    document.getElementById("checkbox2").style.display = "none";
+                    document.getElementById("checkbox2").checked = false;
+                    document.getElementById("labelc2").style.display = "none";
 
-                index += 1;
+                    document.getElementById("fs2").style.height = "30px";
+                    document.getElementById("s1").style.top = "140px";
+                }
             }
 
-            index = 0;
-            currline = 0x000;
-            currword = "";
+            function compile() {
+                "use strict";
+                
+                var RAMSIZE = parseInt(document.getElementById("ramsize").value, 10);
+                
+                if (RAMSIZE > 4096) {
+                    return "RAM must be addressable by 12 bits or less!";
+                }
 
-            var binary = [];
-            var bindex = 0;
+                var radi8 = false;
+                var option1 = false;
+                var option2 = false;
 
-            program += "\n";
-
-            while (index < program.length) {
-                chr = program.charAt(index);
-
-
-                if (chr === ",") {
-                    currword = "";
-                } else if (chr === "\n") {
-                    var cmd = currword.substr(0, 3);
-                    var indirect = false;
-                    if (currword.lastIndexOf("I") > 7) {
-                        indirect = true;
+                if (!document.getElementById("radio1-1").checked && !document.getElementById("radio1-2").checked) {
+                    return "Please choose an output type\n\n<<<<<<----------";
+                } else if (document.getElementById("radio1-2").checked) {
+                    radi8 = true;
+                    if (document.getElementById("checkbox1").checked) {
+                        option1 = true;
                     }
-
-                    //window.alert(currline.toString(16) + ": " + currword + "       I:" + indirect);
-                    var obj;
-                    switch (cmd) {
-                    case "ORG":
-                        currline = parseInt(currword.substr(4, 3), 16) - 0x1;
-                        break;
-                    case "DEC":
-                        binary.push({line: currline.toString(16), instr: currword.substr(4)});
-                        break;
-                    case "HEX":
-                        binary.push({line: currline.toString(16), instr: currword.substr(4)});
-                        break;
-                    case "BIN":
-                        binary.push({line: currline.toString(16), instr: currword.substr(4)});
-                        break;
-                    case "OCT":
-                        binary.push({line: currline.toString(16), instr: currword.substr(4)});
-                        break;
-                    case "CLA":
-                        binary.push({line: currline.toString(16), instr: 0x7800});
-                        break;
-                    case "CLE":
-                        binary.push({line: currline.toString(16), instr: 0x7400});
-                        break;
-                    case "CMA":
-                        binary.push({line: currline.toString(16), instr: 0x7200});
-                        break;
-                    case "CME":
-                        binary.push({line: currline.toString(16), instr: 0x7100});
-                        break;
-                    case "CIR":
-                        binary.push({line: currline.toString(16), instr: 0x7080});
-                        break;
-                    case "CIL":
-                        binary.push({line: currline.toString(16), instr: 0x7040});
-                        break;
-                    case "INC":
-                        binary.push({line: currline.toString(16), instr: 0x7020});
-                        break;
-                    case "SPA":
-                        binary.push({line: currline.toString(16), instr: 0x7010});
-                        break;
-                    case "SNA":
-                        binary.push({line: currline.toString(16), instr: 0x7008});
-                        break;
-                    case "SZA":
-                        binary.push({line: currline.toString(16), instr: 0x7004});
-                        break;
-                    case "SZE":
-                        binary.push({line: currline.toString(16), instr: 0x7002});
-                        break;
-                    case "HLT":
-                        binary.push({line: currline.toString(16), instr: 0x7001});
-                        break;
-                    case "INP":
-                        binary.push({line: currline.toString(16), instr: 0xF800});
-                        break;
-                    case "OUT":
-                        binary.push({line: currline.toString(16), instr: 0xF400});
-                        break;
-                    case "SKI":
-                        binary.push({line: currline.toString(16), instr: 0xF200});
-                        break;
-                    case "SKO":
-                        binary.push({line: currline.toString(16), instr: 0xF100});
-                        break;
-                    case "ION":
-                        binary.push({line: currline.toString(16), instr: 0xF080});
-                        break;
-                    case "IOF":
-                        binary.push({line: currline.toString(16), instr: 0xF040});
-                        break;
-                    case "AND":
-                        if (indirect) {
-                            obj = {line: currline.toString(16), instr: 0x8000};
-                        } else {
-                            obj = {line: currline.toString(16), instr: 0x0000};
-                        }
-                        obj.instr += labels[currword.substr(4, 3)];
-                        binary.push(obj);
-                        break;
-                    case "ADD":
-                        if (indirect) {
-                            obj = {line: currline.toString(16), instr: 0x9000};
-                        } else {
-                            obj = {line: currline.toString(16), instr: 0x1000};
-                        }
-                        obj.instr += labels[currword.substr(4, 3)];
-                        binary.push(obj);
-                        break;
-                    case "LDA":
-                        if (indirect) {
-                            obj = {line: currline.toString(16), instr: 0xA000};
-                        } else {
-                            obj = {line: currline.toString(16), instr: 0x2000};
-                        }
-                        obj.instr += labels[currword.substr(4, 3)];
-                        binary.push(obj);
-                        break;
-                    case "STA":
-                        if (indirect) {
-                            obj = {line: currline.toString(16), instr: 0xB000};
-                        } else {
-                            obj = {line: currline.toString(16), instr: 0x3000};
-                        }
-                        obj.instr += labels[currword.substr(4, 3)];
-                        binary.push(obj);
-                        break;
-                    case "BUN":
-                        if (indirect) {
-                            obj = {line: currline.toString(16), instr: 0xC000};
-                        } else {
-                            obj = {line: currline.toString(16), instr: 0x4000};
-                        }
-                        obj.instr += labels[currword.substr(4, 3)];
-                        binary.push(obj);
-                        break;
-                    case "BSA":
-                        if (indirect) {
-                            obj = {line: currline.toString(16), instr: 0xD000};
-                        } else {
-                            obj = {line: currline.toString(16), instr: 0x5000};
-                        }
-                        obj.instr += labels[currword.substr(4, 3)];
-                        binary.push(obj);
-                        break;
-                    case "ISZ":
-                        if (indirect) {
-                            obj = {line: currline.toString(16), instr: 0xE000};
-                        } else {
-                            obj = {line: currline.toString(16), instr: 0x6000};
-                        }
-                        obj.instr += labels[currword.substr(4, 3)];
-                        binary.push(obj);
-                        break;
+                    if (document.getElementById("checkbox2").checked) {
+                        option2 = true;
                     }
-
-                    currline += 0x1;
-                    currword = "";
                 } else {
-                    currword += chr;
-                }
-
-                index += 1;
-            }
-
-            var i;
-            var str = "";
-
-            if (!radi8) {
-                for (i = 0; i < binary.length; i += 1) {
-                    if (option1) {
-                        str += binary[i].line.toString(16) + "\t";
+                    if (document.getElementById("checkbox3").checked) {
+                        option1 = true;
                     }
-                    str += binary[i].instr.toString(16) + "\n";
                 }
-            } else {
-                var eight = 0;
-                if (!option1) {
+
+                var program = document.getElementById("programtext").value;
+
+                var labels = {};
+
+                var index = 0;
+                var currline = 0x000;
+                var currword = "";
+
+                var chr;
+                while (index < program.length) {
+                    chr = program.charAt(index);
+
+                    if (chr === "," && currword.length > 0) {
+                        labels[currword] = currline;
+                    } else if (chr === "\n") {
+                        if (currword.substr(0, 3) === "ORG") {
+                            currline = parseInt(currword.substr(4, 3), 16) - 0x1;
+                            if (currline > RAMSIZE) {
+                                currline += 0x1;
+                                return "Address lies outside of RAM's largest addressable location.\nBad Address: " + currline.toString(16) + "\nRAM Size: " + RAMSIZE.toString(16);
+                            }
+                            if ((currline + 0x1) < 0) {
+                                currline += 0x1;
+                                return "Address must be greater than or equal to 0!\nBad Address: " + currline.toString(16);
+                            }
+                        }
+                        currline += 0x1;
+                        currword = "";
+                    } else {
+                        currword += chr;
+                    }
+
+                    index += 1;
+                }
+
+                index = 0;
+                currline = 0x000;
+                currword = "";
+
+                var binary = [];
+                var bindex = 0;
+
+                program += "\n";
+
+                while (index < program.length) {
+                    chr = program.charAt(index);
+                    
+                    if (currline === RAMSIZE) {
+                        return "Instruction address is larger than the largest addressable location.";
+                    }
+
+                    if (chr === ",") {
+                        currword = "";
+                    } else if (chr === "\n") {
+                        var cmd = currword.substr(0, 3);
+                        var indirect = false;
+                        if (currword.lastIndexOf("I") > 7) {
+                            indirect = true;
+                        }
+
+                        //window.alert(currline.toString(16) + ": " + currword + "       I:" + indirect);
+                        var obj;
+                        switch (cmd) {
+                            case "ORG":
+                                currline = parseInt(currword.substr(4, 3), 16) - 0x1;
+                                break;
+                            case "DEC":
+                                binary.push({line: currline.toString(16), instr: currword.substr(4)});
+                                break;
+                            case "HEX":
+                                binary.push({line: currline.toString(16), instr: currword.substr(4)});
+                                break;
+                            case "BIN":
+                                binary.push({line: currline.toString(16), instr: currword.substr(4)});
+                                break;
+                            case "OCT":
+                                binary.push({line: currline.toString(16), instr: currword.substr(4)});
+                                break;
+                            case "CLA":
+                                binary.push({line: currline.toString(16), instr: 0x7800});
+                                break;
+                            case "CLE":
+                                binary.push({line: currline.toString(16), instr: 0x7400});
+                                break;
+                            case "CMA":
+                                binary.push({line: currline.toString(16), instr: 0x7200});
+                                break;
+                            case "CME":
+                                binary.push({line: currline.toString(16), instr: 0x7100});
+                                break;
+                            case "CIR":
+                                binary.push({line: currline.toString(16), instr: 0x7080});
+                                break;
+                            case "CIL":
+                                binary.push({line: currline.toString(16), instr: 0x7040});
+                                break;
+                            case "INC":
+                                binary.push({line: currline.toString(16), instr: 0x7020});
+                                break;
+                            case "SPA":
+                                binary.push({line: currline.toString(16), instr: 0x7010});
+                                break;
+                            case "SNA":
+                                binary.push({line: currline.toString(16), instr: 0x7008});
+                                break;
+                            case "SZA":
+                                binary.push({line: currline.toString(16), instr: 0x7004});
+                                break;
+                            case "SZE":
+                                binary.push({line: currline.toString(16), instr: 0x7002});
+                                break;
+                            case "HLT":
+                                binary.push({line: currline.toString(16), instr: 0x7001});
+                                break;
+                            case "INP":
+                                binary.push({line: currline.toString(16), instr: 0xF800});
+                                break;
+                            case "OUT":
+                                binary.push({line: currline.toString(16), instr: 0xF400});
+                                break;
+                            case "SKI":
+                                binary.push({line: currline.toString(16), instr: 0xF200});
+                                break;
+                            case "SKO":
+                                binary.push({line: currline.toString(16), instr: 0xF100});
+                                break;
+                            case "ION":
+                                binary.push({line: currline.toString(16), instr: 0xF080});
+                                break;
+                            case "IOF":
+                                binary.push({line: currline.toString(16), instr: 0xF040});
+                                break;
+                            case "AND":
+                                if (indirect) {
+                                    obj = {line: currline.toString(16), instr: 0x8000};
+                                } else {
+                                    obj = {line: currline.toString(16), instr: 0x0000};
+                                }
+                                obj.instr += labels[currword.substr(4, 3)];
+                                binary.push(obj);
+                                break;
+                            case "ADD":
+                                if (indirect) {
+                                    obj = {line: currline.toString(16), instr: 0x9000};
+                                } else {
+                                    obj = {line: currline.toString(16), instr: 0x1000};
+                                }
+                                obj.instr += labels[currword.substr(4, 3)];
+                                binary.push(obj);
+                                break;
+                            case "LDA":
+                                if (indirect) {
+                                    obj = {line: currline.toString(16), instr: 0xA000};
+                                } else {
+                                    obj = {line: currline.toString(16), instr: 0x2000};
+                                }
+                                obj.instr += labels[currword.substr(4, 3)];
+                                binary.push(obj);
+                                break;
+                            case "STA":
+                                if (indirect) {
+                                    obj = {line: currline.toString(16), instr: 0xB000};
+                                } else {
+                                    obj = {line: currline.toString(16), instr: 0x3000};
+                                }
+                                obj.instr += labels[currword.substr(4, 3)];
+                                binary.push(obj);
+                                break;
+                            case "BUN":
+                                if (indirect) {
+                                    obj = {line: currline.toString(16), instr: 0xC000};
+                                } else {
+                                    obj = {line: currline.toString(16), instr: 0x4000};
+                                }
+                                obj.instr += labels[currword.substr(4, 3)];
+                                binary.push(obj);
+                                break;
+                            case "BSA":
+                                if (indirect) {
+                                    obj = {line: currline.toString(16), instr: 0xD000};
+                                } else {
+                                    obj = {line: currline.toString(16), instr: 0x5000};
+                                }
+                                obj.instr += labels[currword.substr(4, 3)];
+                                binary.push(obj);
+                                break;
+                            case "ISZ":
+                                if (indirect) {
+                                    obj = {line: currline.toString(16), instr: 0xE000};
+                                } else {
+                                    obj = {line: currline.toString(16), instr: 0x6000};
+                                }
+                                obj.instr += labels[currword.substr(4, 3)];
+                                binary.push(obj);
+                                break;
+                            default:
+                                return "The instruction \"" + currword + "\" is not a valid instruction.\nReference the left side panel for all available instructions and syntax.";
+                        }
+
+                        currline += 0x1;
+                        currword = "";
+                    } else {
+                        currword += chr;
+                    }
+
+                    index += 1;
+                }
+
+                var i;
+                var str = "";
+
+                if (!radi8) {
                     for (i = 0; i < binary.length; i += 1) {
-                        str += binary[i].instr.toString(16);
-                        if (eight === 7) {
-                            eight = 0;
-                            str += "\n";
-                        } else {
-                            eight += 1;
-                            str += " ";
+                        if (option1) {
+                            str += binary[i].line.toString(16) + "\t";
                         }
+                        str += binary[i].instr.toString(16) + "\n";
                     }
                 } else {
-                    var ram = [4096];
-                    for (i = 0; i < 4096; i += 1) {
-                        if (option2) {
-                            ram[i] = "0000";
-                        } else {
-                            ram[i] = "XXXX";
+                    var eight = 0;
+                    if (!option1) {
+                        for (i = 0; i < binary.length; i += 1) {
+                            str += binary[i].instr.toString(16);
+                            if (eight === 7) {
+                                eight = 0;
+                                str += "\n";
+                            } else {
+                                eight += 1;
+                                str += " ";
+                            }
                         }
-                    }
+                    } else {
+                        var ram = [RAMSIZE];
+                        for (i = 0; i < RAMSIZE; i += 1) {
+                            if (option2) {
+                                ram[i] = "0000";
+                            } else {
+                                ram[i] = "XXXX";
+                            }
+                        }
 
-                    for (i = 0; i < binary.length; i += 1) {
-                        ram[parseInt(binary[i].line.toString(16), 16)] = binary[i].instr.toString(16);
-                    }
+                        for (i = 0; i < binary.length; i += 1) {
+                            ram[parseInt(binary[i].line.toString(16), 16)] = binary[i].instr.toString(16);
+                        }
 
-                    for (i = 0; i < ram.length; i += 1) {
-                        str += ram[i];
-                        if (eight === 7) {
-                            eight = 0;
-                            str += "\n";
-                        } else {
-                            eight += 1;
-                            str += " ";
+                        for (i = 0; i < ram.length; i += 1) {
+                            str += ram[i];
+                            if (eight === 7) {
+                                eight = 0;
+                                str += "\n";
+                            } else {
+                                eight += 1;
+                                str += " ";
+                            }
                         }
                     }
                 }
+
+                return str;
             }
 
-            return str;
-        }
 
-        
-        function generate() {
-            "use strict";
+            function generate() {
+                "use strict";
 
-            document.getElementById("output").value = compile();
-        }
-    </script>
-</head>
+                document.getElementById("output").value = compile();
+            }
+        </script>
+    </head>
 
-<body>
+    <body>
 
-<div style="position: relative; width: 96%; height: 100px; top: 0px; left: 2%; font-family: 'Franklin Gothic Medium', 'Arial Narrow', Arial, sans-serif; font-size: 15px;">
-	<a style="font-size: 20px">Mano's SDK - Written by Fernando Faria</a><br />
-	Use this program to translate Mano assembly code into Mano's computer binary 
-	code.&nbsp; You can choose between 1 instruction per row format, or in 8 
-	words per line, 2 bytes per word, 2^12 total lines format.&nbsp; You can 
-	specify if the unused words will be X's or 0's.&nbsp; All labels must be 3 characters long.&nbsp; No spaces before or after a label's comma.  </div>
-<div style="position: relative; width: 500px; height: 500px; top: 0px; left: 0px; float: left; font-size: small;">
-	<p id="reference">
-        <hr style="position: absolute; width: 100px; left: 0px;"><legend style="position: absolute; left: 110px; font-size: larger;">Compiler Directives</legend>
-    <br />
-    ORG ###       - Compiler directive to tell where next line starts.<br />
-    LBL,{CMD}     - Compiler directive to label addresses. No spaces before and after comma.<br />
-    {CMD} I       - Compiler directive to indicate indirect addressing.<br />
-    DEC ###       - Compiler directive to indicate literal.<br />
-    HEX ###       - Compiler directive to indicate literal.<br />
-    BIN ###       - Compiler directive to indicate literal.<br />
-    OCT ###       - Compiler directive to indicate literal.<br />
-        <hr style="position: absolute; width: 100px; left: 0px;"><legend style="position: absolute; left: 110px; font-size: larger;">Commands</legend>
-    <br />
-	AND {LBL} [I] - And direct memory to accumulator<br />
-	ADD {LBL} [I] - Add direct memory to accumulator (affects carry bit)<br />
-	LDA {LBL} [I] - Load direct memory to accumulator<br />
-	STA {LBL} [I] - Store accumulator to direct memory<br />
-	BUN {LBL} [I] - Unconditionally branch to direct memory<br />
-	BSA {LBL} [I] - Store program counter to direct memory and branch to following address<br />
-	ISZ {LBL} [I] - Increment value in memory and skip next instruction if the sum is zero<br />
-	CLA           - Clear the accumulator<br />
-	CLE           - Clear the carry bit<br />
-	CMA           - Complement the accumulator<br />
-	CME           - Complement the carry bit<br />
-	CIR           - Circulate accumulator right (through carry bit)<br />
-	CIL           - Circulate accumulator left (through carry bit)<br />
-	INC           - Increment accumulator (does not affect carry bit)<br />
-	SPA           - Skip next instruction if accumulator is positive<br />
-	SNA           - Skip next instruction if accumulator is negative<br />
-	SZA           - Skip next instruction if accumulator is zero<br />
-	SZE           - Skip next instruction if carry bit is zero<br />
-	HLT           - Halt computer by clearing the halt bit latch<br />
-	INP           - Input from character bus to accumulator<br />
-	OUT           - Output from accumulator to character bus<br />
-	SKI           - Skip next instruction if input flag is set<br />
-	SKO           - Skip next instruction if output flag is set<br />
-	ION           - Enable interrupts<br />
-	IOF           - Disable interrupts</p>
-</div>
-<div style="position: absolute; width: 650px; height: 600px; left: 505px; top: 120px;">
+        <div style="position: relative; width: 96%; height: 100px; top: 0px; left: 2%; font-family: 'Franklin Gothic Medium', 'Arial Narrow', Arial, sans-serif; font-size: 15px;">
+            <a style="font-size: 20px">Mano's SDK - Written by Fernando Faria</a>
+            <br />
+            Use this program to translate Mano assembly code into Mano's computer binary 
+            code.&nbsp; You can choose between 1 instruction per row format, or in 8 
+            words per line, 2 bytes per word, 2^12 total lines format.&nbsp; You can 
+            specify if the unused words will be X's or 0's.&nbsp; All labels must be 3 
+            characters long.&nbsp; No spaces before or after a label's comma.
+        </div>
+        <div style="position: relative; width: 500px; height: 600px; top: 0px; left: 0px; float: left; font-size: small;">
+            
+            <hr style="position: absolute; width: 100px; left: 0px;">
+            <legend style="position: absolute; left: 110px; font-size: larger;">Compiler Directives</legend>
+            <br />
+            <p id="reference1">
+                ORG ###       - Compiler directive to tell where next line starts.<br />
+                LBL,{CMD}     - Compiler directive to label addresses. No spaces before and after comma.<br />
+                {CMD} I       - Compiler directive to indicate indirect addressing.<br />
+                DEC ###       - Compiler directive to indicate literal.<br />
+                HEX ###       - Compiler directive to indicate literal.<br />
+                BIN ###       - Compiler directive to indicate literal.<br />
+                OCT ###       - Compiler directive to indicate literal.
+            </p>
+            <hr style="position: absolute; width: 100px; left: 0px;">
+            <legend style="position: absolute; left: 110px; font-size: larger;">Commands</legend>
+            <br />
+            <p id="reference2">
+                AND {LBL} [I] - And direct memory to accumulator<br />
+                ADD {LBL} [I] - Add direct memory to accumulator (affects carry bit)<br />
+                LDA {LBL} [I] - Load direct memory to accumulator<br />
+                STA {LBL} [I] - Store accumulator to direct memory<br />
+                BUN {LBL} [I] - Unconditionally branch to direct memory<br />
+                BSA {LBL} [I] - Store program counter to direct memory and branch to following address<br />
+                ISZ {LBL} [I] - Increment value in memory and skip next instruction if the sum is zero<br />
+                CLA           - Clear the accumulator<br />
+                CLE           - Clear the carry bit<br />
+                CMA           - Complement the accumulator<br />
+                CME           - Complement the carry bit<br />
+                CIR           - Circulate accumulator right (through carry bit)<br />
+                CIL           - Circulate accumulator left (through carry bit)<br />
+                INC           - Increment accumulator (does not affect carry bit)<br />
+                SPA           - Skip next instruction if accumulator is positive<br />
+                SNA           - Skip next instruction if accumulator is negative<br />
+                SZA           - Skip next instruction if accumulator is zero<br />
+                SZE           - Skip next instruction if carry bit is zero<br />
+                HLT           - Halt computer by clearing the halt bit latch<br />
+                INP           - Input from character bus to accumulator<br />
+                OUT           - Output from accumulator to character bus<br />
+                SKI           - Skip next instruction if input flag is set<br />
+                SKO           - Skip next instruction if output flag is set<br />
+                ION           - Enable interrupts<br />
+                IOF           - Disable interrupts
+            </p>
+        </div>
+        <div style="position: absolute; width: 700px; height: 700px; left: 505px; top: 120px;">
 
-	<form style="position: absolute; width: 330px; height: 200px; top: 0px; left: 30px;">
-        <textarea id="programtext" name="textarea1" autofocus="true" cols="15" rows="30" wrap="soft" style="resize: vertical;">ORG 100
+            <form style="position: absolute; width: 330px; height: 410px; top: 0px; left: 30px;">
+                <textarea id="programtext" name="textarea1" autofocus="true" cols="15" rows="30" wrap="soft" style="resize: vertical;">ORG 100
 </textarea>
-		<fieldset draggable="" name="Group1" style="position:absolute; height: 67px; left: 131px; top: 0px;">
-		<legend>Output Type</legend>
-            <input id="radio1-1" name="Radio1" type="radio" value="1" onclick="hide8()" /><label id="labelr1"> 1 word per row<br /></label>
-            <input id="radio1-2" name="Radio1" type="radio" value="2" onclick="hide1()" /><label id="labelr2"> 8 words per line</label>
-        </fieldset>
-        <fieldset id="fs2" name="Group1" style="position: absolute; height: 70px; left: 131px; top: 85px;">
-            <legend>Options</legend>
-            <input id="checkbox1" name="Checkbox1" type="checkbox" onclick="hide2()" /><label id="labelc1"> Entire RAM contents<br /></label>
-            <input id="checkbox2" name="Checkbox2" type="checkbox" /><label id="labelc2"> Unused words are 0's<br /></label>
-            <input id="checkbox3" name="Checkbox3" type="checkbox" /><label id="labelc3"> Show addresses</label>
-		</fieldset>
-		<input id="s1" name="Submit1" type="button" value="Compile" style="position: absolute; left: 131px; top: 180px;" onclick="generate()" />
-        <textarea id="output" name="textarea2" autofocus="false" cols="45" rows="45" wrap="soft" style="position: absolute; left: 330px"></textarea>
-    </form>
-</div>
+                <fieldset id="fs1" name="Group1" style="position:absolute; height: 67px; left: 131px; top: 0px;">
+                <legend>Output Type</legend>
+                    <input id="radio1-1" name="Radio1" type="radio" value="1" onclick="hide8()" /><label id="labelr1"> 1 instruction per row<br /></label>
+                    <input id="radio1-2" name="Radio1" type="radio" value="2" onclick="hide1()" /><label id="labelr2"> 8 words per line</label>
+                </fieldset>
+                <fieldset id="fs2" name="Group1" style="position: absolute; height: 70px; left: 131px; top: 85px;">
+                    <legend>Options</legend>
+                    <input id="checkbox1" name="Checkbox1" type="checkbox" onclick="hide2()" /><label id="labelc1"> Entire RAM contents<br /></label>
+                    <input id="checkbox2" name="Checkbox2" type="checkbox" /><label id="labelc2"> Unused words are 0's<br /></label>
+                    <input id="checkbox3" name="Checkbox3" type="checkbox" /><label id="labelc3"> Show addresses</label>
+                </fieldset>
+                <input id="s1" name="Submit1" type="button" value="Compile" style="position: absolute; left: 131px; top: 180px;" onclick="generate()" />
+                <label style="position: absolute; top: 250px;">
+                    RAM must be large enough to contain all instructions, and be addressable with 12 bits. 
+                    <br />RAM Size (in decimal): 
+                </label>
+                <input id="ramsize" name="ramsize" type="text" value="4096" style="position: absolute; top: 320px; width: 70px;" />
+                <textarea id="output" name="textarea2" autofocus="false" cols="45" rows="45" wrap="soft" style="position: absolute; left: 330px"></textarea>
+            </form>
+        </div>
 
-</body>
+        <div style="position: absolute; top: 720px;">
+            Information about Mano's Machine comes from: <br />
+            Mano, M. Morris (October 1992).<br />
+                Computer System Architecture (3rd ed. ed.).  <br />
+                Prentice-Hall. ISBN 0-13-175563-3.
+        </div>
+
+    </body>
 
 </html>
