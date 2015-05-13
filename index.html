@@ -60,7 +60,11 @@
             function compile() {
                 "use strict";
                 
-                var RAMSIZE = document.getElementById("ramsize").value;
+                var RAMSIZE = parseInt(document.getElementById("ramsize").value, 10);
+                
+                if (RAMSIZE > 4096) {
+                    return "RAM must be addressable by 12 bits or less!";
+                }
 
                 var radi8 = false;
                 var option1 = false;
@@ -99,6 +103,14 @@
                     } else if (chr === "\n") {
                         if (currword.substr(0, 3) === "ORG") {
                             currline = parseInt(currword.substr(4, 3), 16) - 0x1;
+                            if (currline > RAMSIZE) {
+                                currline += 0x1;
+                                return "Address lies outside of RAM's largest addressable location.\nBad Address: " + currline.toString(16) + "\nRAM Size: " + RAMSIZE.toString(16);
+                            }
+                            if ((currline + 0x1) < 0) {
+                                currline += 0x1;
+                                return "Address must be greater than or equal to 0!\nBad Address: " + currline.toString(16);
+                            }
                         }
                         currline += 0x1;
                         currword = "";
@@ -120,7 +132,10 @@
 
                 while (index < program.length) {
                     chr = program.charAt(index);
-
+                    
+                    if (currline === RAMSIZE) {
+                        return "Instruction address is larger than the largest addressable location.";
+                    }
 
                     if (chr === ",") {
                         currword = "";
@@ -134,138 +149,140 @@
                         //window.alert(currline.toString(16) + ": " + currword + "       I:" + indirect);
                         var obj;
                         switch (cmd) {
-                        case "ORG":
-                            currline = parseInt(currword.substr(4, 3), 16) - 0x1;
-                            break;
-                        case "DEC":
-                            binary.push({line: currline.toString(16), instr: currword.substr(4)});
-                            break;
-                        case "HEX":
-                            binary.push({line: currline.toString(16), instr: currword.substr(4)});
-                            break;
-                        case "BIN":
-                            binary.push({line: currline.toString(16), instr: currword.substr(4)});
-                            break;
-                        case "OCT":
-                            binary.push({line: currline.toString(16), instr: currword.substr(4)});
-                            break;
-                        case "CLA":
-                            binary.push({line: currline.toString(16), instr: 0x7800});
-                            break;
-                        case "CLE":
-                            binary.push({line: currline.toString(16), instr: 0x7400});
-                            break;
-                        case "CMA":
-                            binary.push({line: currline.toString(16), instr: 0x7200});
-                            break;
-                        case "CME":
-                            binary.push({line: currline.toString(16), instr: 0x7100});
-                            break;
-                        case "CIR":
-                            binary.push({line: currline.toString(16), instr: 0x7080});
-                            break;
-                        case "CIL":
-                            binary.push({line: currline.toString(16), instr: 0x7040});
-                            break;
-                        case "INC":
-                            binary.push({line: currline.toString(16), instr: 0x7020});
-                            break;
-                        case "SPA":
-                            binary.push({line: currline.toString(16), instr: 0x7010});
-                            break;
-                        case "SNA":
-                            binary.push({line: currline.toString(16), instr: 0x7008});
-                            break;
-                        case "SZA":
-                            binary.push({line: currline.toString(16), instr: 0x7004});
-                            break;
-                        case "SZE":
-                            binary.push({line: currline.toString(16), instr: 0x7002});
-                            break;
-                        case "HLT":
-                            binary.push({line: currline.toString(16), instr: 0x7001});
-                            break;
-                        case "INP":
-                            binary.push({line: currline.toString(16), instr: 0xF800});
-                            break;
-                        case "OUT":
-                            binary.push({line: currline.toString(16), instr: 0xF400});
-                            break;
-                        case "SKI":
-                            binary.push({line: currline.toString(16), instr: 0xF200});
-                            break;
-                        case "SKO":
-                            binary.push({line: currline.toString(16), instr: 0xF100});
-                            break;
-                        case "ION":
-                            binary.push({line: currline.toString(16), instr: 0xF080});
-                            break;
-                        case "IOF":
-                            binary.push({line: currline.toString(16), instr: 0xF040});
-                            break;
-                        case "AND":
-                            if (indirect) {
-                                obj = {line: currline.toString(16), instr: 0x8000};
-                            } else {
-                                obj = {line: currline.toString(16), instr: 0x0000};
-                            }
-                            obj.instr += labels[currword.substr(4, 3)];
-                            binary.push(obj);
-                            break;
-                        case "ADD":
-                            if (indirect) {
-                                obj = {line: currline.toString(16), instr: 0x9000};
-                            } else {
-                                obj = {line: currline.toString(16), instr: 0x1000};
-                            }
-                            obj.instr += labels[currword.substr(4, 3)];
-                            binary.push(obj);
-                            break;
-                        case "LDA":
-                            if (indirect) {
-                                obj = {line: currline.toString(16), instr: 0xA000};
-                            } else {
-                                obj = {line: currline.toString(16), instr: 0x2000};
-                            }
-                            obj.instr += labels[currword.substr(4, 3)];
-                            binary.push(obj);
-                            break;
-                        case "STA":
-                            if (indirect) {
-                                obj = {line: currline.toString(16), instr: 0xB000};
-                            } else {
-                                obj = {line: currline.toString(16), instr: 0x3000};
-                            }
-                            obj.instr += labels[currword.substr(4, 3)];
-                            binary.push(obj);
-                            break;
-                        case "BUN":
-                            if (indirect) {
-                                obj = {line: currline.toString(16), instr: 0xC000};
-                            } else {
-                                obj = {line: currline.toString(16), instr: 0x4000};
-                            }
-                            obj.instr += labels[currword.substr(4, 3)];
-                            binary.push(obj);
-                            break;
-                        case "BSA":
-                            if (indirect) {
-                                obj = {line: currline.toString(16), instr: 0xD000};
-                            } else {
-                                obj = {line: currline.toString(16), instr: 0x5000};
-                            }
-                            obj.instr += labels[currword.substr(4, 3)];
-                            binary.push(obj);
-                            break;
-                        case "ISZ":
-                            if (indirect) {
-                                obj = {line: currline.toString(16), instr: 0xE000};
-                            } else {
-                                obj = {line: currline.toString(16), instr: 0x6000};
-                            }
-                            obj.instr += labels[currword.substr(4, 3)];
-                            binary.push(obj);
-                            break;
+                            case "ORG":
+                                currline = parseInt(currword.substr(4, 3), 16) - 0x1;
+                                break;
+                            case "DEC":
+                                binary.push({line: currline.toString(16), instr: currword.substr(4)});
+                                break;
+                            case "HEX":
+                                binary.push({line: currline.toString(16), instr: currword.substr(4)});
+                                break;
+                            case "BIN":
+                                binary.push({line: currline.toString(16), instr: currword.substr(4)});
+                                break;
+                            case "OCT":
+                                binary.push({line: currline.toString(16), instr: currword.substr(4)});
+                                break;
+                            case "CLA":
+                                binary.push({line: currline.toString(16), instr: 0x7800});
+                                break;
+                            case "CLE":
+                                binary.push({line: currline.toString(16), instr: 0x7400});
+                                break;
+                            case "CMA":
+                                binary.push({line: currline.toString(16), instr: 0x7200});
+                                break;
+                            case "CME":
+                                binary.push({line: currline.toString(16), instr: 0x7100});
+                                break;
+                            case "CIR":
+                                binary.push({line: currline.toString(16), instr: 0x7080});
+                                break;
+                            case "CIL":
+                                binary.push({line: currline.toString(16), instr: 0x7040});
+                                break;
+                            case "INC":
+                                binary.push({line: currline.toString(16), instr: 0x7020});
+                                break;
+                            case "SPA":
+                                binary.push({line: currline.toString(16), instr: 0x7010});
+                                break;
+                            case "SNA":
+                                binary.push({line: currline.toString(16), instr: 0x7008});
+                                break;
+                            case "SZA":
+                                binary.push({line: currline.toString(16), instr: 0x7004});
+                                break;
+                            case "SZE":
+                                binary.push({line: currline.toString(16), instr: 0x7002});
+                                break;
+                            case "HLT":
+                                binary.push({line: currline.toString(16), instr: 0x7001});
+                                break;
+                            case "INP":
+                                binary.push({line: currline.toString(16), instr: 0xF800});
+                                break;
+                            case "OUT":
+                                binary.push({line: currline.toString(16), instr: 0xF400});
+                                break;
+                            case "SKI":
+                                binary.push({line: currline.toString(16), instr: 0xF200});
+                                break;
+                            case "SKO":
+                                binary.push({line: currline.toString(16), instr: 0xF100});
+                                break;
+                            case "ION":
+                                binary.push({line: currline.toString(16), instr: 0xF080});
+                                break;
+                            case "IOF":
+                                binary.push({line: currline.toString(16), instr: 0xF040});
+                                break;
+                            case "AND":
+                                if (indirect) {
+                                    obj = {line: currline.toString(16), instr: 0x8000};
+                                } else {
+                                    obj = {line: currline.toString(16), instr: 0x0000};
+                                }
+                                obj.instr += labels[currword.substr(4, 3)];
+                                binary.push(obj);
+                                break;
+                            case "ADD":
+                                if (indirect) {
+                                    obj = {line: currline.toString(16), instr: 0x9000};
+                                } else {
+                                    obj = {line: currline.toString(16), instr: 0x1000};
+                                }
+                                obj.instr += labels[currword.substr(4, 3)];
+                                binary.push(obj);
+                                break;
+                            case "LDA":
+                                if (indirect) {
+                                    obj = {line: currline.toString(16), instr: 0xA000};
+                                } else {
+                                    obj = {line: currline.toString(16), instr: 0x2000};
+                                }
+                                obj.instr += labels[currword.substr(4, 3)];
+                                binary.push(obj);
+                                break;
+                            case "STA":
+                                if (indirect) {
+                                    obj = {line: currline.toString(16), instr: 0xB000};
+                                } else {
+                                    obj = {line: currline.toString(16), instr: 0x3000};
+                                }
+                                obj.instr += labels[currword.substr(4, 3)];
+                                binary.push(obj);
+                                break;
+                            case "BUN":
+                                if (indirect) {
+                                    obj = {line: currline.toString(16), instr: 0xC000};
+                                } else {
+                                    obj = {line: currline.toString(16), instr: 0x4000};
+                                }
+                                obj.instr += labels[currword.substr(4, 3)];
+                                binary.push(obj);
+                                break;
+                            case "BSA":
+                                if (indirect) {
+                                    obj = {line: currline.toString(16), instr: 0xD000};
+                                } else {
+                                    obj = {line: currline.toString(16), instr: 0x5000};
+                                }
+                                obj.instr += labels[currword.substr(4, 3)];
+                                binary.push(obj);
+                                break;
+                            case "ISZ":
+                                if (indirect) {
+                                    obj = {line: currline.toString(16), instr: 0xE000};
+                                } else {
+                                    obj = {line: currline.toString(16), instr: 0x6000};
+                                }
+                                obj.instr += labels[currword.substr(4, 3)];
+                                binary.push(obj);
+                                break;
+                            default:
+                                return "The instruction \"" + currword + "\" is not a valid instruction.\nReference the left side panel for all available instructions and syntax.";
                         }
 
                         currline += 0x1;
@@ -402,7 +419,7 @@
 </textarea>
                 <fieldset id="fs1" name="Group1" style="position:absolute; height: 67px; left: 131px; top: 0px;">
                 <legend>Output Type</legend>
-                    <input id="radio1-1" name="Radio1" type="radio" value="1" onclick="hide8()" /><label id="labelr1"> 1 word per row<br /></label>
+                    <input id="radio1-1" name="Radio1" type="radio" value="1" onclick="hide8()" /><label id="labelr1"> 1 instruction per row<br /></label>
                     <input id="radio1-2" name="Radio1" type="radio" value="2" onclick="hide1()" /><label id="labelr2"> 8 words per line</label>
                 </fieldset>
                 <fieldset id="fs2" name="Group1" style="position: absolute; height: 70px; left: 131px; top: 85px;">
@@ -412,7 +429,10 @@
                     <input id="checkbox3" name="Checkbox3" type="checkbox" /><label id="labelc3"> Show addresses</label>
                 </fieldset>
                 <input id="s1" name="Submit1" type="button" value="Compile" style="position: absolute; left: 131px; top: 180px;" onclick="generate()" />
-                <label style="position: absolute; top: 300px;">RAM Size: </label>
+                <label style="position: absolute; top: 250px;">
+                    RAM must be large enough to contain all instructions, and be addressable with 12 bits. 
+                    <br />RAM Size (in decimal): 
+                </label>
                 <input id="ramsize" name="ramsize" type="text" value="4096" style="position: absolute; top: 320px; width: 70px;" />
                 <textarea id="output" name="textarea2" autofocus="false" cols="45" rows="45" wrap="soft" style="position: absolute; left: 330px"></textarea>
             </form>
