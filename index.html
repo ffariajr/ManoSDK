@@ -1,0 +1,139 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+
+<head>
+<meta content="en-us" http-equiv="Content-Language" />
+<meta content="text/html; charset=utf-8" http-equiv="Content-Type" />
+<style type="text/css">
+</style>
+    <script type="text/javascript">
+        function hide8() {
+            "use strict";
+            document.getElementById("checkbox1").style.display = "none";
+            document.getElementById("checkbox1").checked = false;
+            document.getElementById("labelc1").style.display = "none";
+            document.getElementById("checkbox2").style.display = "none";
+            document.getElementById("checkbox2").checked = false;
+            document.getElementById("labelc2").style.display = "none";
+
+            document.getElementById("checkbox3").style.display = "inline";
+            document.getElementById("labelc3").style.display = "inline";
+
+            document.getElementById("fs2").style.height = "30px";
+            document.getElementById("s1").style.top = "140px";
+        }
+
+        function hide1() {
+            "use strict";
+            document.getElementById("checkbox1").style.display = "inline";
+            document.getElementById("labelc1").style.display = "inline";
+            document.getElementById("checkbox2").style.display = "none";
+            document.getElementById("checkbox2").checked = false;
+            document.getElementById("labelc2").style.display = "none";
+
+            document.getElementById("checkbox3").style.display = "none";
+            document.getElementById("checkbox3").checked = false;
+            document.getElementById("labelc3").style.display = "none";
+
+            document.getElementById("fs2").style.height = "30px";
+            document.getElementById("s1").style.top = "140px";
+        }
+        
+        function hide2() {
+            "use strict";
+            if (document.getElementById("checkbox1").checked) {
+                document.getElementById("checkbox2").style.display = "inline";
+                document.getElementById("labelc2").style.display = "inline";
+                
+                document.getElementById("fs2").style.height = "50px";
+                document.getElementById("s1").style.top = "160px";
+            } else {
+                document.getElementById("checkbox2").style.display = "none";
+                document.getElementById("checkbox2").checked = false;
+                document.getElementById("labelc2").style.display = "none";
+                
+                document.getElementById("fs2").style.height = "30px";
+                document.getElementById("s1").style.top = "140px";
+            }
+        }
+        
+        function generate() {
+            "use strict";
+
+            document.getElementById("output").value = compile();
+        }
+    </script>
+    <script type="text/javascript" src="test.js"></script>
+</head>
+
+<body>
+
+<div style="position: relative; width: 96%; height: 100px; top: 0px; left: 2%; font-family: 'Franklin Gothic Medium', 'Arial Narrow', Arial, sans-serif; font-size: 15px;">
+	<a style="font-size: 20px">Mano's SDK - Written by Fernando Faria</a><br />
+	Use this program to translate Mano assembly code into Mano's computer binary 
+	code.&nbsp; You can choose between 1 instruction per row format, or in 8 
+	words per line, 2 bytes per word, 2^12 total lines format.&nbsp; You can 
+	specify if the unused words will be X's or 0's.&nbsp; All labels must be 3 characters long.&nbsp; No spaces before or after a label's comma.  </div>
+<div style="position: relative; width: 500px; height: 500px; top: 0px; left: 0px; float: left; font-size: small;">
+	<p id="reference">
+        <hr style="position: absolute; width: 100px; left: 0px;"><legend style="position: absolute; left: 110px; font-size: larger;">Compiler Directives</legend>
+    <br />
+    ORG ###       - Compiler directive to tell where next line starts.<br />
+    LBL,{CMD}     - Compiler directive to label addresses. No spaces before and after comma.<br />
+    {CMD} I       - Compiler directive to indicate indirect addressing.<br />
+    DEC ###       - Compiler directive to indicate literal.<br />
+    HEX ###       - Compiler directive to indicate literal.<br />
+    BIN ###       - Compiler directive to indicate literal.<br />
+    OCT ###       - Compiler directive to indicate literal.<br />
+        <hr style="position: absolute; width: 100px; left: 0px;"><legend style="position: absolute; left: 110px; font-size: larger;">Commands</legend>
+    <br />
+	AND {LBL} [I] - And direct memory to accumulator<br />
+	ADD {LBL} [I] - Add direct memory to accumulator (affects carry bit)<br />
+	LDA {LBL} [I] - Load direct memory to accumulator<br />
+	STA {LBL} [I] - Store accumulator to direct memory<br />
+	BUN {LBL} [I] - Unconditionally branch to direct memory<br />
+	BSA {LBL} [I] - Store program counter to direct memory and branch to following address<br />
+	ISZ {LBL} [I] - Increment value in memory and skip next instruction if the sum is zero<br />
+	CLA           - Clear the accumulator<br />
+	CLE           - Clear the carry bit<br />
+	CMA           - Complement the accumulator<br />
+	CME           - Complement the carry bit<br />
+	CIR           - Circulate accumulator right (through carry bit)<br />
+	CIL           - Circulate accumulator left (through carry bit)<br />
+	INC           - Increment accumulator (does not affect carry bit)<br />
+	SPA           - Skip next instruction if accumulator is positive<br />
+	SNA           - Skip next instruction if accumulator is negative<br />
+	SZA           - Skip next instruction if accumulator is zero<br />
+	SZE           - Skip next instruction if carry bit is zero<br />
+	HLT           - Halt computer by clearing the halt bit latch<br />
+	INP           - Input from character bus to accumulator<br />
+	OUT           - Output from accumulator to character bus<br />
+	SKI           - Skip next instruction if input flag is set<br />
+	SKO           - Skip next instruction if output flag is set<br />
+	ION           - Enable interrupts<br />
+	IOF           - Disable interrupts</p>
+</div>
+<div style="position: absolute; width: 650px; height: 600px; left: 505px; top: 120px;">
+
+	<form style="position: absolute; width: 330px; height: 200px; top: 0px; left: 30px;">
+        <textarea id="programtext" name="textarea1" autofocus="true" cols="15" rows="30" wrap="soft" style="resize: vertical;">ORG 100
+</textarea>
+		<fieldset draggable="" name="Group1" style="position:absolute; height: 67px; left: 131px; top: 0px;">
+		<legend>Output Type</legend>
+            <input id="radio1-1" name="Radio1" type="radio" value="1" onclick="hide8()" /><label id="labelr1"> 1 word per row<br /></label>
+            <input id="radio1-2" name="Radio1" type="radio" value="2" onclick="hide1()" /><label id="labelr2"> 8 words per line</label>
+        </fieldset>
+        <fieldset id="fs2" name="Group1" style="position: absolute; height: 70px; left: 131px; top: 85px;">
+            <legend>Options</legend>
+            <input id="checkbox1" name="Checkbox1" type="checkbox" onclick="hide2()" /><label id="labelc1"> Entire RAM contents<br /></label>
+            <input id="checkbox2" name="Checkbox2" type="checkbox" /><label id="labelc2"> Unused words are 0's<br /></label>
+            <input id="checkbox3" name="Checkbox3" type="checkbox" /><label id="labelc3"> Show addresses</label>
+		</fieldset>
+		<input id="s1" name="Submit1" type="button" value="Compile" style="position: absolute; left: 131px; top: 180px;" onclick="generate()" />
+        <textarea id="output" name="textarea2" autofocus="false" cols="45" rows="45" wrap="soft" style="position: absolute; left: 330px"></textarea>
+    </form>
+</div>
+
+</body>
+
+</html>
