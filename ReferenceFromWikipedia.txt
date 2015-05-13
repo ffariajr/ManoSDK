@@ -1,0 +1,26 @@
+      ORG ###       -   Compiler directive to tell where next line starts.
+[LBL,]AND $$$ [I]   -   And direct memory to accumulator
+[LBL,]ADD $$$ [I]   -   Add direct memory to accumulator (affects carry bit)
+[LBL,]LDA $$$ [I]   -   Load direct memory to accumulator
+[LBL,]STA $$$ [I]	-   Store accumulator to direct memory
+[LBL,]BUN $$$ [I]	-   Unconditionally branch to direct memory
+[LBL,]BSA $$$ [I]	-   Store current program counter to direct memory and branch to following address
+[LBL,]ISZ $$$ [I]	-   Increment value in direct memory and skip next instruction if the sum is zero
+[LBL,]CLA $$$       -   Clear the accumulator
+[LBL,]CLE $$$       -   Clear the carry bit
+[LBL,]CMA $$$       -   Complement the accumulator
+[LBL,]CME $$$       -   Complement the carry bit
+[LBL,]CIR $$$       -   Circulate accumulator right (through carry bit)
+[LBL,]CIL $$$       -   Circulate accumulator left (through carry bit)
+[LBL,]INC $$$       -   Increment accumulator (does not affect carry bit)
+[LBL,]SPA $$$       -   Skip next instruction if accumulator is positive
+[LBL,]SNA $$$       -   Skip next instruction if accumulator is negative
+[LBL,]SZA $$$       -   Skip next instruction if accumulator is zero
+[LBL,]SZE $$$       -   Skip next instruction if carry bit is zero
+[LBL,]HLT $$$       -   Halt computer by clearing the halt bit latch
+[LBL,]INP $$$       -   Input from character bus to accumulator
+[LBL,]OUT $$$       -   Output from accumulator to character bus
+[LBL,]SKI $$$       -   Skip next instruction if input flag is set
+[LBL,]SKO $$$       -   Skip next instruction if output flag is set
+[LBL,]ION $$$       -   Enable interrupts
+[LBL,]IOF $$$       -   Disable interrupts

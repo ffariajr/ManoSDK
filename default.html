@@ -1,0 +1,105 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+
+<head>
+<meta content="en-us" http-equiv="Content-Language" />
+<meta content="text/html; charset=utf-8" http-equiv="Content-Type" />
+<style type="text/css">
+.auto-style1 {
+	margin-bottom: 0px;
+}
+.auto-style2 {
+	margin-right: 0px;
+}
+</style>
+    <script type="text/javascript">
+        function hide8() {
+            "use strict";
+            document.getElementById("checkbox1").style.display = "none";
+            document.getElementById("labelc1").style.display = "none";
+            document.getElementById("checkbox2").style.display = "none";
+            document.getElementById("labelc2").style.display = "none";
+
+            document.getElementById("checkbox3").style.display = "inline";
+            document.getElementById("labelc3").style.display = "inline";
+
+            document.getElementById("fs2").style.height = "30px";
+            document.getElementById("s1").style.top = "140px";
+        }
+
+        function hide1() {
+            "use strict";
+            document.getElementById("checkbox1").style.display = "inline";
+            document.getElementById("labelc1").style.display = "inline";
+            document.getElementById("checkbox2").style.display = "inline";
+            document.getElementById("labelc2").style.display = "inline";
+
+            document.getElementById("checkbox3").style.display = "none";
+            document.getElementById("labelc3").style.display = "none";
+
+            document.getElementById("fs2").style.height = "50px";
+            document.getElementById("s1").style.top = "160px";
+        }
+    
+
+    </script>
+    <script type="text/javascript" src="test.js"></script>
+</head>
+
+<body>
+
+<div style="position: relative; width: 96%; height: 100px; top: 0px; left: 2%; font-family: 'Franklin Gothic Medium', 'Arial Narrow', Arial, sans-serif; font-size: 15px;">
+	<a style="font-size: 20px">Mano's SDK - Written by Fernando Faria</a><br />
+	Use this program to translate Mano assembly code into Mano's computer binary 
+	code.&nbsp; You can choose between 1 instruction per row format, or in 8 
+	words per line, 2 bytes per word, 2^12 total lines format.&nbsp; You can 
+	specify if the unused words will be X's or 0's.</div>
+<div style="position: relative; width: 500px; height: 500px; top: 0px; left: 0px; float: left; font-size: small;">
+	<p>ORG ### - Compiler directive to tell where next line starts.<br />
+	AND $$$ [I] - And direct memory to accumulator<br />
+	ADD $$$ [I] - Add direct memory to accumulator (affects carry bit)<br />
+	LDA $$$ [I] - Load direct memory to accumulator<br />
+	STA $$$ [I] - Store accumulator to direct memory<br />
+	BUN $$$ [I] - Unconditionally branch to direct memory<br />
+	BSA $$$ [I] - Store program counter to direct memory and branch to following address<br />
+	ISZ $$$ [I] - Increment value in memory and skip next instruction if the sum is zero<br />
+	CLA $$$ - Clear the accumulator<br />
+	CLE $$$ - Clear the carry bit<br />
+	CMA $$$ - Complement the accumulator<br />
+	CME $$$ - Complement the carry bit<br />
+	CIR $$$ - Circulate accumulator right (through carry bit)<br />
+	CIL $$$ - Circulate accumulator left (through carry bit)<br />
+	INC $$$ - Increment accumulator (does not affect carry bit)<br />
+	SPA $$$ - Skip next instruction if accumulator is positive<br />
+	SNA $$$ - Skip next instruction if accumulator is negative<br />
+	SZA $$$ - Skip next instruction if accumulator is zero<br />
+	SZE $$$ - Skip next instruction if carry bit is zero<br />
+	HLT $$$ - Halt computer by clearing the halt bit latch<br />
+	INP $$$ - Input from character bus to accumulator<br />
+	OUT $$$ - Output from accumulator to character bus<br />
+	SKI $$$ - Skip next instruction if input flag is set<br />
+	SKO $$$ - Skip next instruction if output flag is set<br />
+	ION $$$ - Enable interrupts<br />
+	IOF $$$ - Disable interrupts</p>
+</div>
+<div style="position: absolute; width: 450px; height: 800px; left: 505px; top: 120px;" class="auto-style2">
+
+	<form style="position: absolute; width: 400px; height: 200px; top: 0px; left: 30px;">
+        <textarea id="program" name="textarea1" autofocus="true" cols="25" rows="30" wrap="soft" style="resize: vertical;">ORG 100</textarea>
+		<fieldset class="auto-style1" name="Group1" style="position:absolute; height: 67px; left: 201px; top: 0px;">
+		<legend>Output Type</legend>
+            <input id="radio1-1" name="Radio1" type="radio" value="1" onclick="hide8()" /><label id="labelr1"> 1 word per row<br /></label>
+            <input id="radio1-2" name="Radio1" type="radio" value="2" onclick="hide1()" /><label id="labelr2"> 8 words per line</label>
+        </fieldset>
+        <fieldset id="fs2" name="Group1" style="position: absolute; height: 70px; left: 201px; top: 85px;">
+            <legend>Options</legend>
+            <input id="checkbox1" name="Checkbox1" type="checkbox" /><label id="labelc1"> Entire RAM contents<br /></label>
+            <input id="checkbox2" name="Checkbox2" type="checkbox" /><label id="labelc2"> Unused words are 0's<br /></label>
+            <input id="checkbox3" name="Checkbox3" type="checkbox" /><label id="labelc3"> Show addresses</label>
+		</fieldset>
+		<input id="s1" name="Submit1" type="button" value="Compile" style="position: absolute; left: 201px; top: 180px;" onclick="generate()" /></form>
+</div>
+
+</body>
+
+</html>
